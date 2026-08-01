@@ -35,6 +35,18 @@ class TestExpense(unittest.TestCase):
         expense.add_expense(5, "交通")
         self.assertEqual(expense.total_by_category()["餐饮"], 30)
 
+    def test_monthly_summary(self):
+        # 用 when 参数造不同日期的数据来测
+        expense.add_expense(10, "餐饮", when="2026-08-01")
+        expense.add_expense(20, "餐饮", when="2026-08-15")
+        expense.add_expense(5, "交通", when="2026-08-20")
+        expense.add_expense(99, "学习", when="2026-07-30")  # 7月，不算进8月
+        s = expense.monthly_summary("2026-08")
+        self.assertEqual(s["count"], 3)
+        self.assertEqual(s["total"], 35)
+        self.assertEqual(s["by_category"]["餐饮"], 30)
+        self.assertNotIn("学习", s["by_category"])
+
 
 if __name__ == "__main__":
     unittest.main()

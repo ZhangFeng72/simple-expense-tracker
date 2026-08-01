@@ -76,3 +76,27 @@ def delete_expense(item_id):
         return False
     save_expenses(new)
     return True
+
+
+def monthly_summary(month):
+    """统计某个月的花费。
+
+    month: 形如 '2026-08' 的字符串（年-月）
+    返回：{
+        'items':      该月所有记录,
+        'by_category': 按分类汇总 {'餐饮': 30, ...},
+        'total':      该月总额,
+        'count':      该月笔数,
+    }
+    """
+    expenses = load_expenses()
+    items = [e for e in expenses if e["date"].startswith(month)]
+    by_category = {}
+    for e in items:
+        by_category[e["category"]] = by_category.get(e["category"], 0) + e["amount"]
+    return {
+        "items": items,
+        "by_category": by_category,
+        "total": sum(e["amount"] for e in items),
+        "count": len(items),
+    }
